@@ -1,1 +1,2 @@
 DXL mean's DDL/DML/DCL exam file 
+permision and access is tell about user permision or new user
