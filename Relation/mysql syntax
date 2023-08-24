@@ -1,0 +1,290 @@
+-- 정렬 검색 (전체 직원을 부서번호를 기준으로 오름차순)
+SELECT * 
+FROM EMPLOYEE 
+ORDER BY DEP_NO ASC;
+
+SELECT *
+FROM  EMPLOYEE 
+ORDER BY DEP_NO DESC,EMP_NAME ASC;
+
+SELECT *
+FROM EMPLOYEE 
+ORDER BY FIELD(JIKUP,'사장','부장','과장','대리','사원');  -- 내가 원하는 정렬 리스트를 지정해서 그렇게 정렬할 수 있음
+
+-- join 검색
+
+-- left outer : from뒤에 선언된 먼저 나온 테이블의 정보를 모두 포함하고 join뒤에 나오는 2번째 테이블정보를 조건에 맞추어 보여줌
+SELECT *
+FROM CUSTOMER A
+LEFT OUTER JOIN EMPLOYEE B
+ON A.EMP_NO = B.EMP_NO ;
+
+-- right outer : join뒤에 선언된 먼저 나온 테이블의 정보를 모두 포함하고 from뒤에 나오는 2번째 테이블정보를 조건에 맞추어 보여줌
+SELECT *
+FROM CUSTOMER A
+right OUTER JOIN EMPLOYEE B
+ON A.EMP_NO = B.EMP_NO ;
+
+-- inner : 조건에 부합하는 데이터들만 출력
+SELECT *
+FROM CUSTOMER A
+inner JOIN EMPLOYEE B
+ON A.EMP_NO = B.EMP_NO ;
+
+-- test1 부산에서 근무하는 직원 츨력
+SELECT *
+FROM EMPLOYEE A
+LEFT JOIN DEPT B
+ON A.DEP_NO = B.DEP_NO
+WHERE B.loc='부산';
+
+-- test2 이순신 직원이 처리해야하는 대기 손님
+SELECT CUS_NAME
+FROM CUSTOMER A
+INNER JOIN EMPLOYEE B 
+ON A.EMP_NO = B.EMP_NO
+WHERE B.EMP_NAME ='이순신';
+
+-- test3 근무지가 부산인 직원들이 감당하고 있는 고객 리스트 출력
+SELECT A.CUS_NAME AS "고객명"
+		,B.EMP_NAME AS "직원명"
+		,C.LOC AS "근무지"
+FROM CUSTOMER A
+INNER JOIN EMPLOYEE B
+	ON A.EMP_NO = B.EMP_NO 
+INNER JOIN DEPT C
+	ON B.DEP_NO = C.DEP_NO
+WHERE c.LOC ='부산';
+
+-- self join
+SELECT A.EMP_NO,A.EMP_NAME, A.MGR_EMP_NO
+		,B.EMP_NO,B.EMP_NAME
+FROM EMPLOYEE A -- 부하직원
+INNER JOIN EMPLOYEE B -- 직속 상관
+ON B.EMP_NO = A.MGR_EMP_NO;
+
+SELECT A.EMP_NO,A.EMP_NAME, A.MGR_EMP_NO
+		,B.EMP_NO,B.EMP_NAME
+FROM EMPLOYEE A -- 부하직원
+LEFT outer JOIN EMPLOYEE B -- 직속 상관
+ON B.EMP_NO = A.MGR_EMP_NO;
+
+SELECT A.CUS_NAME AS "고객명"
+		,B.EMP_NAME AS "직원명"
+		,C.LOC AS "근무지"
+FROM CUSTOMER A
+INNER JOIN EMPLOYEE B
+	ON A.EMP_NO = B.EMP_NO 
+INNER JOIN DEPT C
+	ON B.DEP_NO = C.DEP_NO
+	AND C.LOC ='부산';
+
+-- 연봉이 3000이상인 직원 검색
+SELECT EMP_NAME
+FROM EMPLOYEE 
+WHERE SALARY >=3000;
+
+-- 연봉이 2000이하인 직원 검색
+SELECT EMP_NAME
+FROM EMPLOYEE 
+WHERE SALARY  < 2000;
+
+-- 연봉이 3000이상 5000이하
+SELECT EMP_NAME
+FROM EMPLOYEE 
+WHERE SALARY >=3000 AND SALARY <=5000;
+
+-- 연봉이 2000미만 3000초과
+SELECT EMP_NAME
+FROM EMPLOYEE 
+WHERE SALARY >3000 or SALARY <2000;
+
+-- 직원들의 연봉을 5%인상할 경우 연봉이 3000이상이 되는 직원을 검색하시오
+SELECT EMP_NAME AS '직원명'
+FROM EMPLOYEE A
+WHERE (A.SALARY*1.05) > 3000;
+
+-- 연봉이 2000이상 3000이하의 직원을 검색하시오
+SELECT *
+FROM EMPLOYEE 
+WHERE SALARY BETWEEN 2000 AND 3000;
+
+-- 연봉이 1000~2000인 직원 또는 4000~5000인 직원 조회
+SELECT *
+FROM EMPLOYEE 
+WHERE (SALARY>=1000 AND SALARY<=2000) OR (SALARY>=4000 AND SALARY<=5000);
+
+-- 직급이 '사원' '대리' '과장' 인 직원을 검색하시오
+SELECT *
+FROM EMPLOYEE 
+WHERE FIELD(JIKUP,"과장","대리","사원");
+-- 위에처럼 하거나 where JIKUP in ("과장","대리","사원") 이렇게
+
+SELECT *
+FROM EMPLOYEE 
+where JIKUP NOT in ("과장","대리","사원")
+
+-- 직속상관이 없는 직원을 출력하시오
+SELECT EMP_NAME,JIKUP
+FROM EMPLOYEE 
+WHERE MGR_EMP_NO IS NULL ;
+
+-- 성이 류씨인 직원을 찾으시오
+SELECT EMP_NAME
+FROM EMPLOYEE
+WHERE EMP_NAME LIKE "류%";
+
+SELECT EMP_NAME
+FROM EMPLOYEE
+WHERE EMP_NAME LIKE "%화";
+
+SELECT EMP_NAME
+FROM EMPLOYEE
+WHERE EMP_NAME LIKE "__화";
+-- 3글자 화로 끝나는 사람 출력
+
+SELECT EMP_NAME
+FROM EMPLOYEE
+WHERE EMP_NAME LIKE "_화";
+-- 2글자 화로 끝나는사람
+
+SELECT *
+FROM EMPLOYEE 
+WHERE SALARY LIKE '2%'; 
+-- salary는 int형 like는 문자열을 비교해주는 키워드인데 되는이유는 자동형변환이 되기 때문
+-- 단 이러한 방법은 마이그레이션 작업이나 다른 db에서 충돌을 일으킬 가능성이 농후하기에 추천하지 않는다
+
+-- 이름이 이*라 인 직원을 검색하시오
+SELECT *
+FROM EMPLOYEE 
+WHERE EMP_NAME LIKE "이%라";
+
+-- 성이 '이'가 아닌 직원을 검색하시오.
+SELECT *
+FROM  EMPLOYEE 
+WHERE EMP_NAME <> '이%';
+
+-- 집합 연산자
+SELECT EMP_NAME AS "이름"
+		,PHONE_NUM AS "전화번호"
+		,JUMIN_NUM AS "주민번호"
+FROM EMPLOYEE 
+UNION
+SELECT CUS_NAME AS "이름"
+		,TEL_NUM AS "전화번호"
+		,JUMIN_NUM  AS "주민번호"
+FROM CUSTOMER;
+
+-- union 과 union all 차이점 확인하기
+-- 중복 제거 x
+SELECT '김철이' AS "Name"
+UNION ALL 
+SELECT '김철이' AS "Name"
+UNION ALL
+SELECT '신똘이' AS "Name"
+
+-- 중복 제거 o
+SELECT '김철이' AS "Name"
+UNION 
+SELECT '김철이' AS "Name"
+UNION
+SELECT '신똘이' AS "Name"
+
+-- 함수
+SELECT ABS(-200);
+SELECT round(2.18,1);
+SELECT round(2.18);
+SELECT round(2.18,5);
+SELECT round(2.18231,3);
+SELECT TRUNCATE(2.18231);
+SELECT TRUNCATE(2367.18231,-2);
+SELECT MOD(2,0);
+SELECT MOD (3,2);
+SELECT MOD (0,2);
+
+-- 문자열 함수
+SELECT LOWER("DATABASE");
+SELECT LENGTH ("hello");
+SELECT CHAR_LENGTH("hello");
+SELECT LENGTH ("안녕"); -- byte 길이
+SELECT left("가나다라마바사",3);
+SELECT RIGHT ("가나다라마바사",3);
+SELECT INSTR ("가나다라마바사","다");
+SELECT INSTR ("가나다라마바사","하");
+SELECT SUBSTRING("가나다라마바사",2,3);
+SELECT SUBSTRING_INDEX("010-2345-6789",'-',2);
+SELECT CONCAT("안녕","하세요");
+SELECT IFNULL(EMP_NO,"없음") FROM CUSTOMER ; 
+SELECT  substring('test1@gmail.com',1,instr('test1@gmail.com','1'));
+SELECT  substring('test1@gmail.com',instr('test1@gmail.com','@')+1,instr('test1@gmail.com','com'));
+SELECT *
+FROM (SELECT 'APPLE' AS "FRUIT" 
+		UNION ALL SELECT 'apple' AS "FRUIT" 
+		UNION ALL SELECT 'banana' AS "FRUIT"
+		UNION ALL SELECT 'apple111ff하하' AS 'FRUIT') A
+WHERE upper(A.FRUIT) LIKE CONCAT("%",upper("banana"),"%"); 
+
+-- 시간함수
+SELECT NOW();
+SELECT YEAR(NOW());
+SELECT MINUTE("2022-06-11 12:34:56");
+SELECT LAST_DAY("2022-06-11 12:34:56");
+SELECT DATE_ADD(NOW(),INTERVAL 1 Day);
+SELECT DATE_ADD(NOW(),INTERVAL 2 year);
+SELECT DATE_SUB(NOW(),INTERVAL 1 HOUR);
+SELECT DATE_SUB(NOW(),INTERVAL 2 minute);
+SELECT MONTHNAME("2022-06-11 12:34:56"); 
+
+-- 시간 포맷
+SELECT DATE_FORMAT("2022-12-31","%y-%m-%d");
+SELECT DATE_FORMAT("2022-12-31","%Y-%m-%d");
+SELECT DATE_FORMAT("2022-12-31","%Y-%M-%D");
+SELECT DATE_FORMAT("2022-06-11 12:34:56","%Y-%m-%d %H:%i:%s");
+SELECT CAST(20211014 AS date);
+SELECT CONVERT(20211014,date);
+SELECT cast(20211014030330 AS char);
+SELECT CONVERT(20211014030330,char);
+SELECT cast(20211014030330 AS char(5));
+SELECT CONVERT(20211014030330,char(40));
+-- %y = 2글자 연 데이터
+-- %Y = 4글자 연 데이터
+-- %m = 2글자 숫자 월 데이터
+-- %M = 영문 월 데이터
+-- %d = 2글자 숫자 일 데이터
+-- %D = 영문 일 데이터(~st)
+-- %H = 2글자 시간
+-- %i = 2글자 분
+-- %s = 2글자 초
+
+-- 집단 함수
+SELECT count(*) AS "직원수" FROM EMPLOYEE ;
+SELECT sum(salary) AS "연봉합계" FROM EMPLOYEE ;
+SELECT avg(salary) AS "평균연봉" FROM EMPLOYEE ;
+SELECT EMP_NAME,Max(SALARY) AS "최고연봉" FROM EMPLOYEE GROUP BY EMP_NAME;
+SELECT EMP_NAME,MIn(salary) AS "최저연봉" FROM EMPLOYEE GROUP BY EMP_NAME;
+
+-- 중복 제거
+SELECT DISTINCT EMP_NO
+FROM CUSTOMER;
+
+SELECT DISTINCT EMP_NO,CUS_NAME
+FROM CUSTOMER ;
+
+-- case when then 문
+SELECT jikup,
+CASE
+	WHEN jikup = '대리' THEN '대애리'
+	WHEN jikup = '과장' THEN '과아장'
+	ELSE jikup
+END AS "test"
+FROM EMPLOYEE ;
+
+
+-- test1
+SELECT EMP_NO,EMP_NAME,
+CASE
+	WHEN substring(JUMIN_NUM,7,1) IN (1,3) THEN '남자'
+	WHEN substring(JUMIN_NUM,7,1) IN (2,4) THEN '여자'
+END AS "성별"
+FROM EMPLOYEE ;
+
