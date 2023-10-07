@@ -1,0 +1,169 @@
+use mobledb; -- 작업할 DB설정
+create table dept(
+    dep_no      INT(2),
+    dep_name    varchar(10)   not null unique, -- null 배제 :not null / 중복 배제 :unique
+    loc         varchar(10)   not null,
+    primary key(dep_no)
+);
+insert into dept(dep_no,dep_name,loc) values(10,'총무부','서울');
+insert into dept(dep_no,dep_name,loc) values(20,'영업부','부산');
+insert into dept(dep_no,dep_name,loc) values(30,'전산부','대전');
+insert into dept(dep_no,dep_name,loc) values(40, '자재부','광주');
+
+select * from mobledb.dept;
+
+create table employee(
+	emp_no        INT(3),
+    emp_name        varchar(10)    not null,
+    dep_no        INT(2),
+    jikup        varchar(10)    not null,
+    salary        INT(9)        default 0,
+    hire_date        TIMESTAMP        default  NOW(),
+    jumin_num        char(13)        not null unique ,
+    phone_num    varchar(15)    not null ,
+    mgr_emp_no    INT(3),
+    primary key(emp_no),
+    foreign key(dep_no) references dept(dep_no),
+    constraint  employee_mgr_emp_no_fk  foreign key(mgr_emp_no)  references employee(emp_no) -- 외래키의 제약조건명 달기
+);
+SET FOREIGN_KEY_CHECKS=0;
+
+insert into employee values( 1, '홍길동', 10, '사장', 5000, '1980-01-01', '7211271109410', '01099699515', null );
+insert into employee values( 2, '한국남', 20, '부장', 3000, '1988-11-01', '6002061841224', '01024948424', 1 );
+insert into employee values( 3, '이순신', 20, '과장', 3500, '1989-03-01', '6209172010520', '01026352672', 2 );
+insert into employee values( 4, '이미라', 30, '대리', 2503, '1983-04-01', '8409282070226', '01094215694', 17 );
+insert into employee values( 5, '이순라', 20, '사원', 1200, '1990-05-01', '8401041483626', '01028585900', 3 );
+insert into employee values( 6, '공부만', 30, '과장', 4003, '1995-05-01', '8402121563616', '01191338328', 17 );
+insert into employee values( 7, '놀기만', 20, '과장', 2300, '1996-06-01', '8011221713914', '01029463523', 2 );
+insert into employee values( 8, '채송화', 30, '대리', 1703, '1992-06-01', '8105271014112', '01047111052', 17 );
+insert into employee values( 9, '무궁화', 10, '사원', 1100, '1984-08-01', '8303291319116', '01025672300', 12 );
+insert into employee values( 10, '공부해', 30, '사원', 1303, '1988-11-01', '8410031281312', '01027073174', 4 );
+insert into employee values( 11, '류별나', 20, '과장', 1600, '1989-12-01', '8409181463545', '01071628290', 2 );
+insert into employee values( 12, '류명한', 10, '대리', 1800, '1990-10-01', '8207211661117', '01042072622', 20 );
+insert into employee values( 13, '무궁화', 10, '부장', 3000, '1996-11-01', '8603231183011', '01098110955', 1 );
+insert into employee values( 14, '채시라', 20, '사원', 3400, '1993-10-01', '8001172065410', '01044452437', 3 );
+insert into employee values( 15, '최진실', 10, '사원', 2000, '1991-04-01', '8303101932611', '01027491145', 12 );
+insert into employee values( 16, '김유신', 30, '사원', 4000, '1981-04-01', '7912031009014', '01098218448', 4 );
+insert into employee values( 17, '이성계', 30, '부장', 2803, '1984-05-01', '8102261713921', '0165358075', 1 );
+insert into employee values( 18, '강감찬', 30, '사원', 1003, '1986-07-01', '8203121977315', '01033583130', 4 );
+insert into employee values( 19, '임꺽정', 20, '사원', 2200, '1988-04-01', '8701301040111', '01086253078', 7 );
+insert into employee values( 20, '깨똥이', 10, '과장', 4500, '1990-05-01', '8811232452719', '01090084876', 13 );
+SET FOREIGN_KEY_CHECKS=1;
+
+select * from employee;
+
+
+create table customer (
+    cus_no        INT(3),
+    cus_name        varchar(10)    not null,
+    tel_num        varchar(15),
+    jumin_num        char(13)        not null unique,
+    emp_no        INT(3),
+    primary key(cus_no),
+    foreign key(emp_no) references employee(emp_no)
+);
+insert into customer values( 1, '류민이', '123-1234', '7001131537915', 3);
+insert into customer values( 2, '이강민', '343-1454', '6902161627914', 2);
+insert into customer values( 3, '이영희', '144-1655', '7503202636215', null);
+insert into customer values( 4, '김철이', '673-1674', '7704301234567', 4);
+insert into customer values( 5, '박류완', '123-1674', '7205211123675', 3);
+insert into customer values( 6, '서캔디', '673-1764', '6507252534566', null);
+insert into customer values( 7, '신똘이', '176-7677', '0006083648614', 7);
+insert into customer values( 8, '도쇠돌', '673-6774', '0008041346574', 9);
+insert into customer values( 9, '권홍이', '767-1234', '7312251234689', 13);
+insert into customer values( 10, '김안나', '767-1677', '7510152432168', 4);
+
+select * from customer;
+
+create table salary_grade (
+    sal_grade_no    INT(2)     primary key,
+    min_salary        INT(5)     not null,
+    max_salary        INT(5)     not null
+);
+insert into salary_grade values( 1, 8000, 10000 );
+insert into salary_grade values( 2, 6000, 7999 );
+insert into salary_grade values( 3, 4000, 5999 );
+insert into salary_grade values( 4, 2000, 3999 );
+insert into salary_grade values( 5, 1000, 1999 );
+
+-- salary_grade 테이블 검색
+select * from salary_grade;
+
+commit;
+
+-- COLUMN ADD
+alter table dept add column test1 varchar(2);
+select * from dept;
+-- change attribute
+alter table dept modify column test1 varchar(10);
+select * from dept;
+-- column name change
+alter table dept change column test1 test2 varchar(10);
+select * from dept;
+-- delete table
+alter table dept drop column test2;
+select * from dept;
+-- drop table
+drop table salary_grade;
+
+-- rename table
+alter table dept rename dept_tmp;
+alter table dept_tmp rename dept;
+
+-- DML UPDATE
+alter table dept add column test1 varchar(10);
+update dept set test1=123;
+select * from dept;
+
+update dept set test1=999 where dep_no=10;
+select * from dept;
+
+-- DML DELETE
+insert into dept(dep_no,dep_name,loc,test1)
+values(50,"IT개발부","서울",102);
+select * from dept;
+delete from dept where dep_no =50;
+
+alter table dept drop column test1;
+
+select * from dept;
+
+-- commit rollback
+alter table dept add column test1 varchar(10);
+insert into dept(dep_no,dep_name,loc,test1)
+values(50,"IT개발부","서울",102);
+
+select * from dept;
+
+commit;
+
+insert into dept(dep_no,dep_name,loc,test1)
+values(60,"IT마켓팅","서울",105);
+select * from dept;
+-- commit되기전 모든 변경사항을 되돌리는 명령
+rollback;
+select * from dept;
+
+-- select 문
+select database();
+show tables;
+desc dept;
+
+select emp_name,jikup,phone_num from employee;
+select * from employee;
+
+-- 고객테이블의 고객명, 전화번호 컬럼을 조회하시오
+select cus_name,tel_num from customer;
+SELECT emp_name,jikup FROM EMPLOYEE  WHERE JIKUP ='대리';
+
+SELECT * FROM EMPLOYEE WHERE DEP_NO =10;
+
+-- 조건 검색
+SELECT EMP_NAME,JIKUP FROM EMPLOYEE WHERE JIKUP ='대리';
+
+-- 부서 테이블을 조회하시오. 단 조회결과로 컬럼명 대신 컬럼의 한글 뜻이 필드명으로 나오도록 조회하시오
+SELECT dep_no AS "부서번호"
+		,dep_name AS "부서이름"
+		,loc AS "위치" 
+FROM DEPT;
+

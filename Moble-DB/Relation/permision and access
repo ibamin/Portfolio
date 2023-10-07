@@ -1,0 +1,13 @@
+create database mobleDB; -- DB추가
+
+-- mysql은 유저-접근허용ip 가 한 쌍이되어 1개의 유저로 등록됨
+-- localhost를 접근 허용 ip로 설정
+create user NKL@localhost identified by '1234';
+-- %를 통해 모든 ip접근 허용
+-- create user 'NKL' @ '%' identified by '1234';
+-- NKL@localhost 유저에게 mobledeb에 있는 모든것에대한 모든 권한을 부여
+grant all privileges on mobledb.* to NKL@localhost;
+
+revoke all privileges on mobledb.* from NKL@localhost;
+
+select * from mobledb.dept;
