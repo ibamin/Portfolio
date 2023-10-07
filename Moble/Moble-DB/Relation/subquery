@@ -1,0 +1,141 @@
+SELECT count(DISTINCT dep_no) AS '부서 갯수'
+FROM EMPLOYEE;
+
+SELECT cus_no,cus_name
+		,CASE 
+			WHEN emp_no IS null THEN '없음'
+			ELSE emp_no
+		END AS '담당직원 번호'
+FROM CUSTOMER ;
+
+SELECT cus_no,cus_name,IFNULL(emp_no,"없음") AS emp_no
+FROM CUSTOMER ;
+
+-- 단일행 서브쿼리
+SELECT *
+FROM CUSTOMER 
+WHERE EMP_NO = (SELECT EMP_NO 
+				FROM EMPLOYEE 
+				WHERE emp_name = '이순신');
+-- 다중행 서브쿼리
+SELECT *
+FROM CUSTOMER 
+WHERE emp_no IN (SELECT EMP_NO
+				FROM EMPLOYEE
+				WHERE jikup='과장');
+				
+SELECT *
+FROM CUSTOMER 
+WHERE  EMP_NO IN (3,6,7,11,20);
+
+-- 서브쿼리 사용하여 담당직원이 부산에서 근무하는 고객 검색
+SELECT cus_no,cus_name
+FROM CUSTOMER 
+WHERE EMP_NO in (SELECT EMP_NO FROM EMPLOYEE WHERE dep_no =(SELECT dep_no FROM DEPT WHERE loc="부산"));
+
+-- 조인만 사용해서 담당직원이 부산에서 근무하는 고객 검색
+SELECT cus_no,cus_name
+FROM CUSTOMER A
+INNER JOIN EMPLOYEE B
+INNER JOIN DEPT C
+ON A.EMP_NO = b.EMP_NO AND b.DEP_NO = c.DEP_NO 
+WHERE c.loc="부산";
+
+-- INLINE VIEW 조회로 임시 테이블을 만들어 사용하는 방법
+SELECT A.LOC
+FROM DEPT A
+INNER JOIN (SELECT DEP_NO FROM EMPLOYEE WHERE mgr_emp_no IS NULL) B
+ON A.DEP_NO = B.DEP_NO;
+
+-- inline view 조회 사용안할 시
+SELECT A.LOC
+FROM DEPT  A
+INNER JOIN EMPLOYEE B
+ON a.DEP_NO = b.DEP_NO 
+AND b.MGR_EMP_NO IS NULL ;
+
+SELECT cus_no,cus_name
+FROM CUSTOMER A
+INNER JOIN (SELECT emp_no FROM EMPLOYEE WHERE salary<3000) B
+ON A.EMP_NO = B.EMP_NO;
+
+SELECT cus_no,cus_name
+FROM CUSTOMER A
+INNER JOIN EMPLOYEE B
+ON a.EMP_NO  = b.EMP_NO
+WHERE b.SALARY < 3000;
+
+SELECT jikup,count(*)
+FROM EMPLOYEE 
+GROUP BY JIKUP ;
+
+SELECT jikup,avg(salary)
+FROM EMPLOYEE 
+GROUP BY JIKUP;
+
+SELECT avg(salary) AS "평균연봉",
+		min(salary) AS "최저연봉",
+		max(salary) AS "최고연봉",
+		YEAR(HIRE_DATE)  AS "입사일"
+FROM EMPLOYEE 
+GROUP BY year(HIRE_DATE)
+ORDER BY YEAR (HIRE_DATE)
+
+SELECT B.DEP_NAME,count(*)AS "직원수"
+FROM EMPLOYEE A
+LEFT OUTER JOIN dept B
+ON A.DEP_NO =b.DEP_NO 
+GROUP BY a.DEP_NO 
+HAVING count(*) >= 7;
+
+SELECT JIKUP  , avg(salary) AS "평균 연봉"
+FROM EMPLOYEE A
+GROUP BY a.JIKUP 
+HAVING avg(a.SALARY) >= 3000;
+
+SELECT a.dep_name,avg(b.salary) AS "평균 연봉"
+FROM DEPT a
+LEFT OUTER JOIN EMPLOYEE B
+ON a.DEP_NO =b.DEP_NO 
+GROUP BY a.DEP_NO , b.JIKUP 
+ORDER BY a.DEP_NO , b.JIKUP 
+
+SELECT a.DEP_NAME,a.DEP_NO ,concat(round(avg(YEAR(now())-year(b.hire_date))),"년")AS "평균 근속년수"
+FROM DEPT a
+INNER JOIN EMPLOYEE B
+ON a.DEP_NO = b.DEP_NO 
+GROUP BY DEP_NO 
+ORDER BY avg(YEAR(now())-year(hire_date)) DESC;
+
+SELECT *
+FROM (
+SELECT a.EMP_NO ,a.EMP_NAME , b.CUS_NAME
+FROM EMPLOYEE a
+LEFT OUTER JOIN CUSTOMER b
+ON a.emp_no = b.EMP_NO 
+
+UNION
+
+SELECT a.emp_no , a.emp_name , b.cus_name
+FROM EMPLOYEE a
+RIGHT OUTER JOIN CUSTOMER B
+ON a.EMP_NO =b.EMP_NO 
+)B;
+
+SELECT emp_name
+FROM EMPLOYEE 
+WHERE SALARY = (SELECT max(SALARY) FROM EMPLOYEE );
+
+SELECT a.emp_name,a.salary,b.sal_grade_no
+FROM EMPLOYEE a
+LEFT OUTER JOIN SALARY_GRADE b
+	ON a.SALARY >= b.MIN_SALARY
+	AND a.SALARY  <= b.MAX_SALARY 
+	
+UPDATE [TABLE a], [TABLE b] SET a.column1 = b.column2
+WHERE a.column1 = b.column2
+
+UPDATE [TABLE a] 
+	[INNER/OUTER] JOIN  [TABLE b] 
+		on a.column1 = b.column2 
+SET a.column1 = b.column2
