@@ -1,0 +1,18 @@
+0-1: git config --global user.name [git 닉네임]
+0-2: git config --global user.email [git email]
+1: git init
+2: git add .
+3: git commit -m "message"
+4: git remote add [별명 ex:origin] [git address]
+5: git remote -v (위치확인)
+6: git push [별명 실습 현재:origin] [branch] (만약에 안되면 git push --force)3
+
+branch
+1: git branch [branch 이름]
+2: git switch [branch 이름]
+3: git add .
+4: git commit -m "modified code"
+5: git switch main
+6: git merge [branch 이름] (저장할 branch에서 작업한 branch이름 사용 ex) git merge develop (main에서))
+7: git commit -m [message]
+8: git push [별명 현재:origin] [branch]
